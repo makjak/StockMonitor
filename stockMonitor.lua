@@ -6,7 +6,7 @@ t = require('term')
 -- GLOBAL VARIABLES --
 
 -- Threshold variables
--- Lubricant thresholds
+-- Lubricant thresholds in mB
 local lowLubeThreshold = 500000000
 local highLubeThreshold = 600000000
 

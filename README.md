@@ -31,6 +31,7 @@ Currently checks for Rotarycraft canola and lubricant and maintains adequate lev
 
 - Fix issue with Agricraft improved seeds (see above known issue)
 - Fix out of memory error (see above known issue)
+- Move configs to external file and generate new file if not found
 - Reduce message spam a bit when nothing has changed
 - Persistent GUI with bars and whatnot
 

@@ -26,6 +26,12 @@ local sleepPeriod = 60
 
 -- FUNCTIONS
 
+-- Digits separated by comma by http://richard.warburton.it
+function comma_value(n)
+    local left,num,right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
+    return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
+end
+
 -- Returns the amount of specified fluid in AE
 function getFluidAmount(fluid)
     local fluids = component.me_controller.getFluidsInNetwork({label = fluid})
@@ -55,31 +61,30 @@ function getItemAmount(item)
 end
 
 -- Checks fluid against thresholds and turns processing ON/OFF if needed
-function checkFluid(fluid, lowThreshold, upperTreshold, side, color)
+function checkFluid(fluid, lowerThreshold, upperTreshold, side, color)
     local fluidAmount = getFluidAmount(fluid)
 
-    if fluidAmount < lowThreshold then
+    if fluidAmount < lowerThreshold then
         component.redstone.setBundledOutput(side, color, 15)
-        print(fluid .. " @ " .. fluidAmount .. ", below lower threshold (" .. lowThreshold .. "), turning on processing.")
+        print(fluid .. " @ " .. comma_value(tostring(math.floor(fluidAmount/1000))) .. " B, below lower threshold (" .. comma_value(tostring(math.floor(lowerThreshold/1000))) .. " B), turning on processing.")
     elseif fluidAmount > upperTreshold then
         component.redstone.setBundledOutput(side, color, 0)
-        print(fluid .. " @ " .. fluidAmount .. ", above upper threshold (" .. upperTreshold .. "), turning off processing.")
+        print(fluid .. " @ " .. comma_value(tostring(math.floor(fluidAmount/1000))) .. " B, above upper threshold (" .. comma_value(tostring(math.floor(upperTreshold/1000))) .. " B), turning off processing.")
     end
 end
 
 -- Checks item against thresholds and turns farm ON/OFF if needed
-function checkItem(item, lowTreshold, upperTreshold, side, color)
+function checkItem(item, lowerTreshold, upperTreshold, side, color)
     local itemAmount = getItemAmount(item)
 
-    if itemAmount < lowTreshold then
+    if itemAmount < lowerTreshold then
         component.redstone.setBundledOutput(side, color, 15)
-        print(item .. " @ " .. itemAmount .. ", below lower threshold (" .. lowTreshold .. "), turning on farm.")
+        print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", below lower threshold (" .. comma_value(tostring(lowerTreshold)) .. "), turning on farm.")
     elseif itemAmount > upperTreshold then
         component.redstone.setBundledOutput(side, color, 0)
-        print(item .. " @ " .. itemAmount .. ", above upper threshold (" .. upperTreshold .. "), turning off farm.")
+        print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", above upper threshold (" .. comma_value(tostring(upperTreshold)) .. "), turning off farm.")
     end
 end
-
 
 -- Main body begins here
 

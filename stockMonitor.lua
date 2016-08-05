@@ -1,7 +1,7 @@
-component = require('component')
-sides = require('sides')
-colors = require('colors')
-t = require('term')
+local component = require('component')
+local sides = require('sides')
+local colors = require('colors')
+local t = require('term')
 
 -- GLOBAL VARIABLES --
 

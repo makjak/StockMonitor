@@ -7,12 +7,12 @@ local t = require('term')
 
 -- Threshold variables
 -- Lubricant thresholds in mB
-local lowLubeThreshold = 500000000
-local highLubeThreshold = 600000000
+local lowLubeThreshold = 900000000
+local highLubeThreshold = 1000000000
 
 -- Canola thresholds
-local lowCanolaThreshold = 200000
-local highCanolaThreshold = 300000
+local lowCanolaThreshold = 400000
+local highCanolaThreshold = 500000
 
 -- Bundled redstone side
 local bundledSide = sides.back
@@ -64,25 +64,34 @@ end
 function checkFluid(fluid, lowerThreshold, upperTreshold, side, color)
     local fluidAmount = getFluidAmount(fluid)
 
-    if fluidAmount < lowerThreshold then
+    if (fluidAmount < lowerThreshold) and not isOn(side, color) then
         component.redstone.setBundledOutput(side, color, 15)
         print(fluid .. " @ " .. comma_value(tostring(math.floor(fluidAmount/1000))) .. " B, below lower threshold (" .. comma_value(tostring(math.floor(lowerThreshold/1000))) .. " B), turning on processing.")
-    elseif fluidAmount > upperTreshold then
+    elseif (fluidAmount > upperTreshold) and isOn(side, color) then
         component.redstone.setBundledOutput(side, color, 0)
         print(fluid .. " @ " .. comma_value(tostring(math.floor(fluidAmount/1000))) .. " B, above upper threshold (" .. comma_value(tostring(math.floor(upperTreshold/1000))) .. " B), turning off processing.")
     end
 end
 
--- Checks item against thresholds and turns farm ON/OFF if needed
+-- Checks item against thresholds and turns gathering ON/OFF if needed
 function checkItem(item, lowerTreshold, upperTreshold, side, color)
     local itemAmount = getItemAmount(item)
 
-    if itemAmount < lowerTreshold then
+    if (itemAmount < lowerTreshold) and not isOn(side, color) then
         component.redstone.setBundledOutput(side, color, 15)
-        print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", below lower threshold (" .. comma_value(tostring(lowerTreshold)) .. "), turning on farm.")
-    elseif itemAmount > upperTreshold then
+        print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", below lower threshold (" .. comma_value(tostring(lowerTreshold)) .. "), gathering ON.")
+    elseif (itemAmount > upperTreshold) and isOn(side, color) then
         component.redstone.setBundledOutput(side, color, 0)
-        print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", above upper threshold (" .. comma_value(tostring(upperTreshold)) .. "), turning off farm.")
+        print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", above upper threshold (" .. comma_value(tostring(upperTreshold)) .. "), gathering OFF.")
+    end
+end
+
+-- Checks if output is already set and returns true/false
+function isOn(side, color)
+    if component.redstone.getBundledOutput(side, color) > 0 then
+        return true
+    else
+        return false
     end
 end
 

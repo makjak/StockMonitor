@@ -3,6 +3,8 @@ OpenComputers script to monitor item and fluid levels and act accordingly.
 
 Currently checks for Rotarycraft canola and lubricant and maintains adequate levels via redstone control but can easily be modified to check other fluids or items and act in different ways to maintain them.
 
+Fair warning, I do not know lua and this is my lua learning project, so results may be abosultely shitty and don't blame me if your save gets nuked.
+
 
 ## Instructions
 

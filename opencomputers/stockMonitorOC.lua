@@ -5,22 +5,6 @@ local t = require('term')
 
 -- GLOBAL VARIABLES --
 
--- Threshold variables
--- Lubricant thresholds in mB
-local lowLubeThreshold = 900000000
-local highLubeThreshold = 1000000000
-
--- Canola thresholds
-local lowCanolaThreshold = 400000
-local highCanolaThreshold = 500000
-
--- Bundled redstone side
-local bundledSide = sides.back
-
--- Bundled redstone transmitter colors
-local lubeColor = colors.red
-local canolaColor = colors.green
-
 -- Sleep duration between checks
 local sleepPeriod = 60
 
@@ -97,13 +81,18 @@ end
 
 -- Main body begins here
 
-if t.isAvailable() then
-    t.clear()
-    print("xilni's stock monitor")
-end
+-- Clear terminal
+t.clear()
+print("xilni's stock monitor")
 
+-- Main loop
 while true do
-    checkFluid("Lubricant", lowLubeThreshold, highLubeThreshold, bundledSide, lubeColor)
-    checkItem("Canola Seeds", lowCanolaThreshold, highCanolaThreshold, bundledSide, canolaColor)
+    checkFluid("Lubricant", 900000000, 1000000000, sides.back, colors.red)
+    checkItem("Canola Seeds", 400000, 500000, sides.back, colors.green)
+    checkItem("Blaze Powder", 10000, 20000, sides.back, colors.white)
+    checkItem("Yeast", 100, 200, sides.back, colors.blue)
+    checkItem("Sludge", 1000, 2000, sides.back, colors.orange)
+    checkFluid("Jet Fuel", 150000000, 200000000, sides.back, colors.yellow)
+
     os.sleep(sleepPeriod)
 end

@@ -1,23 +1,23 @@
 # StockMonitor
-OpenComputers script to monitor item and fluid levels and act accordingly.
+OpenComputers and Computercraft script to monitor item and fluid levels and act accordingly.
 
-Currently checks for Rotarycraft canola and lubricant and maintains adequate levels via redstone control but can easily be modified to check other fluids or items and act in different ways to maintain them.
+Currently checks for whatever I have need of in my existing worlds and maintains adequate levels via redstone control but you can easily be modified to check other fluids or items and act in different ways to maintain them.
 
 Fair warning, I do not know lua and this is my lua learning project, so results may be abosultely shitty and don't blame me if your save gets nuked.
 
 
 ## Instructions
 
-1. Download or copy this program to your OpenComputer.
-2. Modify the items/fluids you want to monitor in the main body and appropriate thresholds in the global variables.
-3. Modify the colors and redstone bundled cable side.
-4. Make sure your computer is connected to your ME Controller via an adapter.
+1. Download or copy the appropriate version of this program to your OpenComputers or ComputerCraft computer.
+2. Modify the items/fluids you want to monitor in the main loop and set appropriate thresholds.
+3. Modify the colors and redstone bundled cable side as appropriate.
+4. If using Opencomputers make sure your computer is connected to your ME Controller via an adapter **OR** if using ComputerCraft make sure your peripheral.wrap() is set to the side your ME network is connected on.
 5. Place your bundled cable on the appropriate side of the computer.
 6. Run script.
 
 ## Known Issues
 
-- If there multiple items of the same name but varying NBT data then it will check against the first one found only. Which one that is is up to AE.
+- In the OpenComputers version if there multiple items of the same name but varying NBT data then it will check against the first one found only. Which one that is is up to AE.
 
   Example: 
 

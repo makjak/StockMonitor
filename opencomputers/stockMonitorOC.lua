@@ -3,6 +3,9 @@ local sides = require('sides')
 local colors = require('colors')
 local t = require('term')
 
+local rs = component.rs
+
+
 -- GLOBAL VARIABLES --
 
 -- Sleep duration between checks
@@ -49,10 +52,10 @@ function checkFluid(fluid, lowerThreshold, upperTreshold, side, color)
     local fluidAmount = getFluidAmount(fluid)
 
     if (fluidAmount < lowerThreshold) and not isOn(side, color) then
-        component.redstone.setBundledOutput(side, color, 15)
+        rs.setBundledOutput(side, color, 15)
         print(fluid .. " @ " .. comma_value(tostring(math.floor(fluidAmount/1000))) .. " B, below lower threshold (" .. comma_value(tostring(math.floor(lowerThreshold/1000))) .. " B), turning on processing.")
     elseif (fluidAmount > upperTreshold) and isOn(side, color) then
-        component.redstone.setBundledOutput(side, color, 0)
+        rs.setBundledOutput(side, color, 0)
         print(fluid .. " @ " .. comma_value(tostring(math.floor(fluidAmount/1000))) .. " B, above upper threshold (" .. comma_value(tostring(math.floor(upperTreshold/1000))) .. " B), turning off processing.")
     end
 end
@@ -62,17 +65,17 @@ function checkItem(item, lowerTreshold, upperTreshold, side, color)
     local itemAmount = getItemAmount(item)
 
     if (itemAmount < lowerTreshold) and not isOn(side, color) then
-        component.redstone.setBundledOutput(side, color, 15)
+        rs.setBundledOutput(side, color, 15)
         print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", below lower threshold (" .. comma_value(tostring(lowerTreshold)) .. "), gathering ON.")
     elseif (itemAmount > upperTreshold) and isOn(side, color) then
-        component.redstone.setBundledOutput(side, color, 0)
+        rs.setBundledOutput(side, color, 0)
         print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", above upper threshold (" .. comma_value(tostring(upperTreshold)) .. "), gathering OFF.")
     end
 end
 
 -- Checks if output is already set and returns true/false
 function isOn(side, color)
-    if component.redstone.getBundledOutput(side, color) > 0 then
+    if rs.getBundledOutput(side, color) > 0 then
         return true
     else
         return false

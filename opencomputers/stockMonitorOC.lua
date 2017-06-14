@@ -4,6 +4,7 @@ local colors = require('colors')
 local t = require('term')
 
 local rs = component.rs
+local me = component.me_controller
 
 
 -- GLOBAL VARIABLES --
@@ -21,7 +22,7 @@ end
 
 -- Returns the amount of specified fluid in AE
 function getFluidAmount(fluid)
-    local fluids = component.me_controller.getFluidsInNetwork({label = fluid})
+    local fluids = me.getFluidsInNetwork({label = fluid})
 
     for _,f in pairs(fluids) do
         if type(f) == "table" then
@@ -35,7 +36,7 @@ end
 
 -- Returns a number of the item amount in AE
 function getItemAmount(item)
-    local items = component.me_controller.getItemsInNetwork({label = item})
+    local items = me.getItemsInNetwork({label = item})
 
     for _,i in pairs(items) do
         if type(i) == "table" then

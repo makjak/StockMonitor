@@ -2,15 +2,18 @@ local component = require('component')
 local sides = require('sides')
 local colors = require('colors')
 local t = require('term')
+local state = require('state')
+local text = require('text')
 
-local rs = component.rs
+local rs = component.redstone
 local me = component.me_controller
+local gpu = component.gpu
 
 
 -- GLOBAL VARIABLES --
 
 -- Sleep duration between checks
-local sleepPeriod = 60
+local sleepPeriod = 30
 
 -- FUNCTIONS
 
@@ -48,30 +51,50 @@ function getItemAmount(item)
     return 0
 end
 
--- Checks fluid against thresholds and turns processing ON/OFF if needed
-function checkFluid(fluid, lowerThreshold, upperTreshold, side, color)
-    local fluidAmount = getFluidAmount(fluid)
+function check(item, lowerThreshold, upperThreshold, side, color, position, type)
+    local type = type or "item"
+    local amount = (type == 'item' and getItemAmount(item)) or getFluidAmount(item)
+    local status = state.unknown
 
-    if (fluidAmount < lowerThreshold) and not isOn(side, color) then
+    if (amount < lowerThreshold) and not isOn(side, color) then
         rs.setBundledOutput(side, color, 15)
-        print(fluid .. " @ " .. comma_value(tostring(math.floor(fluidAmount/1000))) .. " B, below lower threshold (" .. comma_value(tostring(math.floor(lowerThreshold/1000))) .. " B), turning on processing.")
-    elseif (fluidAmount > upperTreshold) and isOn(side, color) then
+        status = state.on
+    elseif (amount > upperThreshold) and isOn(side, color) then
         rs.setBundledOutput(side, color, 0)
-        print(fluid .. " @ " .. comma_value(tostring(math.floor(fluidAmount/1000))) .. " B, above upper threshold (" .. comma_value(tostring(math.floor(upperTreshold/1000))) .. " B), turning off processing.")
+        status = state.off
     end
+
+    updateScreen(item, amount, lowerThreshold, upperThreshold, position, status, type)
 end
 
--- Checks item against thresholds and turns gathering ON/OFF if needed
-function checkItem(item, lowerTreshold, upperTreshold, side, color)
-    local itemAmount = getItemAmount(item)
+function setupScreen(count)
+    gpu.set(1, 1, "Name:")
+    gpu.set(24, 1, text.padLeft("Lower:", 12))
+    gpu.set(38, 1, text.padLeft("Amount:", 12))
+    gpu.set(52, 1, text.padLeft("Upper:", 12))
+    gpu.set(66, 1, "Status:")
+    gpu.setForeground(0x00FF00)
+    for i=3,(2 + count) do gpu.set(66, i, "OFF") end
+    gpu.setForeground(0xFFFFFF)
+end
 
-    if (itemAmount < lowerTreshold) and not isOn(side, color) then
-        rs.setBundledOutput(side, color, 15)
-        print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", below lower threshold (" .. comma_value(tostring(lowerTreshold)) .. "), gathering ON.")
-    elseif (itemAmount > upperTreshold) and isOn(side, color) then
-        rs.setBundledOutput(side, color, 0)
-        print(item .. " @ " .. comma_value(tostring(itemAmount)) .. ", above upper threshold (" .. comma_value(tostring(upperTreshold)) .. "), gathering OFF.")
+-- Update screen
+function updateScreen(item, amount, lowerThreshold, upperThreshold, position, status, type)
+    gpu.set(1, position + 2, item)
+    gpu.set(24, position + 2, type == 'item' and text.padLeft(comma_value(tostring(lowerThreshold)), 12) or text.padLeft((comma_value(tostring(math.floor(lowerThreshold/1000)))), 12))
+    gpu.set(38, position + 2, type == 'item' and text.padLeft(comma_value(tostring(amount)), 12) or text.padLeft((comma_value(tostring(math.floor(amount/1000)))), 12))
+    gpu.set(52, position + 2, type == 'item' and text.padLeft(comma_value(tostring(upperThreshold)), 12) or text.padLeft((comma_value(tostring(math.floor(upperThreshold/1000)))), 12))
+
+    if status == state.on then
+        gpu.setForeground(0xFF0000)
+        gpu.set(66, position + 2, "ON ")
+        gpu.setForeground(0xFFFFFF)
+    elseif status == state.off then
+        gpu.setForeground(0x00FF00)
+        gpu.set(66, position + 2, "OFF")
+        gpu.setForeground(0xFFFFFF)
     end
+
 end
 
 -- Checks if output is already set and returns true/false
@@ -85,18 +108,21 @@ end
 
 -- Main body begins here
 
--- Clear terminal
+--  Reset status
+for i=0,15 do rs.setBundledOutput(sides.left, i, 0) end
+
+-- Setup terminal
 t.clear()
-print("xilni's stock monitor")
+setupScreen(6)
 
 -- Main loop
 while true do
-    checkFluid("Lubricant", 900000000, 1000000000, sides.back, colors.red)
-    checkItem("Canola Seeds", 400000, 500000, sides.back, colors.green)
-    checkItem("Blaze Powder", 10000, 20000, sides.back, colors.white)
-    checkItem("Yeast", 100, 200, sides.back, colors.blue)
-    checkItem("Sludge", 1000, 2000, sides.back, colors.orange)
-    checkFluid("Jet Fuel", 150000000, 200000000, sides.back, colors.yellow)
+    check("Lubricant", 10000000, 12000000, sides.left, colors.red, 1, "fluid")
+    check("Canola Seeds", 50000, 60000, sides.left, colors.green, 2)
+    check("Cinderpearl", 50000, 60000, sides.left, colors.white, 3)
+    check("Sugar Canes", 50000, 60000, sides.left, colors.blue, 4)
+    check("Jet Fuel", 10000000, 12000000, sides.left, colors.yellow, 5, "fluid")
+    check("Industrial Hemp Fiber", 50000, 60000, sides.left, colors.black, 6)
 
     os.sleep(sleepPeriod)
 end
